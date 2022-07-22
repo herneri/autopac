@@ -52,7 +52,7 @@ done
 		exit 0
 	;;
 
-	/sbin/pkg)
+	/usr/sbin/pkg)
 		echo "y" | pkg upgrade && echo "y" | pkg autoremove
 		exit 0
 	;;
@@ -95,7 +95,7 @@ ins() {
 		ins "apk add"
 	;;
 
-	/sbin/pkg)
+	/usr/sbin/pkg)
 		ins "pkg install"
 	;;
 
