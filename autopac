@@ -12,7 +12,7 @@ printf "Usage: $0 [OPTION] \nOptions:\n -i  Install software \n -u  Upgrade soft
 
 # Find manager in the array, if found set it as the current manager
 export mgr="/usr/bin/apt /usr/bin/dnf /usr/bin/pacman
-            /sbin/apk    /sbin/pkg    /usr/sbin/pkg_add"
+            /sbin/apk   /usr/sbin/pkg /usr/sbin/pkg_add"
 for item in ${mgr}; do
     if [ -f $item ]; then
         pkgMgr=$item
