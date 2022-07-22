@@ -71,8 +71,8 @@ esac
 ins() {
     for pkg in $(cat software.txt); do
         echo "y" | $1 $pkg
-	done
-	exit 0
+    done
+    exit 0
 }
 
 [ "$1" = "-i" ] && case "$pkgMgr" in
