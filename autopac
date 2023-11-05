@@ -1,23 +1,25 @@
 #!/bin/sh
 # Automate installing and upgrading packages on most systems
 
-[ "$1" = "-v" ] && printf "autopac 1.0.0 \n" && exit 0
+[ ! "$1" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ] &&
+printf "Usage: autopac [OPTION] \nOptions:\n -i  Install software \n -u  Upgrade software \n -f  Upgrade flatpaks \n -h  Show options\n" && exit 0
+
+[ "$1" = "-v" ] && printf "autopac 1.1 \n" && exit 0
 
 [ "$1" = "-f" ] && [ -f /usr/bin/flatpak ] && flatpak update -y && exit 0
 
 [ "$1" = "-s" ] && [ -f /usr/bin/snap ] && sudo snap refresh && exit 0
 
-[ "$1" = "--help" ] || [ "$1" = "-h" ] &&
-printf "Usage: $0 [OPTION] \nOptions:\n -i  Install software \n -u  Upgrade software \n -f  Upgrade flatpaks \n -h  Show options\n" && exit 0
-
 ins() {
-    for pkg in $(cat software.txt); do
-        echo "y" | $1 $pkg
-    done
-    exit 0
+	if [ "$2" = "-i" ]; then
+		for pkg in $(cat software.txt); do
+			echo "y" | $1 $pkg
+		done
+
+		exit 0
+	fi
 }
 
-# Find manager in the array, if found set it as the current manager
 export mgr="/usr/bin/apt /usr/bin/dnf /usr/bin/pacman
             /sbin/apk   /usr/sbin/pkg /usr/sbin/pkg_add"
 for item in ${mgr}; do
@@ -27,9 +29,10 @@ for item in ${mgr}; do
     fi
 done
 
-[ "$1" = "-u" ] && case "$pkgMgr" in
+case "$pkgMgr" in
 	/usr/bin/pacman)
 		sudo pacman -Syy
+		ins "sudo pacman -S" "$1"
 		echo "y" | sudo pacman -Su
 		printf "\n-- QUERYING DATABASE FOR ORPHANS --\n"
 		echo "ORPHANS:"
@@ -39,6 +42,7 @@ done
 
 	/usr/bin/apt)
 		sudo apt update
+		ins "sudo apt install" "$1"
 		sudo apt upgrade -y
 		printf "\n-- REMOVING UNUSED PACKAGES --\n"
 		sudo apt autoremove -y
@@ -47,6 +51,7 @@ done
 
 	/usr/bin/dnf)
 		sudo dnf check-update
+		ins "sudo dnf install" "$1"
 		yes "y" | sudo dnf upgrade
 		printf "\n-- REMOVING UNUSED PACKAGES --\n"
 		echo "y" | sudo dnf autoremove
@@ -55,16 +60,19 @@ done
 
 	/sbin/apk)
 		apk update
+		ins "apk add" "$1"
 		apk upgrade
 		exit 0
 	;;
 
 	/usr/sbin/pkg)
+		ins "pkg install" "$1"
 		echo "y" | pkg upgrade && echo "y" | pkg autoremove
 		exit 0
 	;;
 
 	/usr/sbin/pkg_add)
+		ins "pkg_add" "$1"
 		pkg_add -u
 		exit 0
 	;;
@@ -74,37 +82,4 @@ done
 	;;
 esac
 
-
-[ "$1" = "-i" ] && case "$pkgMgr" in
-	/usr/bin/pacman)
-		sudo pacman -Syy
-		ins "sudo pacman -S"
-	;;
-
-	/usr/bin/apt)
-		sudo apt update
-		ins "sudo apt install"
-	;;
-
-	/usr/bin/dnf)
-		ins "sudo dnf install"
-	;;
-
-	/sbin/apk)
-		apk update
-		ins "apk add"
-	;;
-
-	/usr/sbin/pkg)
-		ins "pkg install"
-	;;
-
-	/usr/sbin/pkg_add)
-		ins "pkg_add"
-	;;
-
-	*)
-		printf "\n-- PACKAGE MANAGER NOT FOUND --\n" && exit 1
-	;;
-esac
-printf "$0: invalid option -- '$1' \nTry --help for more information\n"
+printf "autopac: invalid option -- '$1' \nTry --help for more information\n"
