@@ -2,13 +2,13 @@ autopac is a simple software installation and update script written for
 POSIX compliant shells. It acts as an autonomous and portable script for
 package managers on most popular operating systems.
 
-To install software, users add the package names (with spaces in between)
-to the "software.txt" file and use ./autopac -i. This allows them to
-install all the software they need without having to manually type it
-out on each system.
-
 -- Operating systems and their supported package managers --
-	Linux distros	    apt, dnf, pacman, apk
+	Linux distros	apt, dnf, pacman, apk
 	FreeBSD		    pkg
 	OpenBSD		    pkg_add
 	Other		    flatpak, snap
+
+To install software, users add the package names (with spaces in between)
+to the "software.txt" file and use autopac -i. This allows them to
+install all the software they need without having to manually type it
+out on each system.
