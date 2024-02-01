@@ -1,5 +1,19 @@
 #!/bin/sh
-# Automate installing and upgrading packages on most systems
+
+#	autopac: Automate installing and upgrading packages on most systems
+#   Copyright 2023 Eric Hernandez
+
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+
+#       https://www.apache.org/licenses/LICENSE-2.0
+
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#	See the License for the specific language governing permissions and
+#   limitations under the License.
 
 [ ! "$1" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ] &&
 printf "Usage: autopac [OPTION] \nOptions:\n -i  Install software \n -u  Upgrade software \n -f  Upgrade flatpaks \n -h  Show options\n" && exit 0
