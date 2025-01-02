@@ -28,7 +28,7 @@ printf "Usage: autopac [OPTION] \nOptions:\n -i  Install software \n -u  Upgrade
 mkdir /home/$2/.config/autopac/ 2> /dev/null
 software_list="/home/$2/.config/autopac/software.config"
 
-if [ "$2" = "-i" ] && [ ! -f $software_list ]; then
+if [ "$1" = "-i" ] && [ ! -f $software_list ]; then
 	touch $software_list 2> /dev/null
 	printf "NOTICE: The software list at $software_list does not exist\n"
 	printf "Please write the names of the packages you want installed there and try again\n"
