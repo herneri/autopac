@@ -4,11 +4,14 @@ autopac is a simple software installation and update script written for
 POSIX compliant shells. It acts as an autonomous and portable script for
 package managers on most popular operating systems.
 
-## Operating systems and their supported package managers
--	Linux distros	apt, dnf, pacman, apk
--	FreeBSD		    pkg
--	OpenBSD		    pkg_add
--	Other		    flatpak, snap
+## Supported Software
+
+| Operating System | Package Manager(s)|
+|------------------|-------------------|
+| Linux distros    | apt, dnf, pacman, apk|
+|	FreeBSD		   |    pkg               |
+|	OpenBSD		   | pkg\_add             |
+|	Other		   | flatpak, snap        |
 
 ## Configuration
 Packages are read from the list stored at `.config/autopac/software.config`
