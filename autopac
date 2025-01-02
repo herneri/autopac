@@ -42,16 +42,6 @@ fi
 
 [ "$1" = "-s" ] && [ -f /usr/bin/snap ] && snap refresh && exit 0
 
-ins() {
-	if [ "$2" = "-i" ]; then
-		for pkg in $(cat $software_list); do
-			echo "y" | $1 $pkg
-		done
-
-		exit 0
-	fi
-}
-
 export mgr="/usr/bin/apt /usr/bin/dnf /usr/bin/pacman
             /sbin/apk   /usr/sbin/pkg /usr/sbin/pkg_add"
 for item in ${mgr}; do
@@ -64,7 +54,7 @@ done
 case "$pkgMgr" in
 	/usr/bin/pacman)
 		pacman -Syy
-		ins "pacman -S" "$1"
+		[ "$1" = "-i" ] && echo "y" | pacman -S $(cat $software_list)
 		echo "y" | pacman -Su
 		printf "\n-- QUERYING DATABASE FOR ORPHANS --\n"
 		echo "ORPHANS:"
@@ -74,7 +64,7 @@ case "$pkgMgr" in
 
 	/usr/bin/apt)
 		apt update
-		ins "apt install" "$1"
+		[ "$1" = "-i" ] && echo "y" | apt install $(cat $software_list)
 		apt upgrade -y
 		printf "\n-- REMOVING UNUSED PACKAGES --\n"
 		apt autoremove -y
@@ -83,7 +73,7 @@ case "$pkgMgr" in
 
 	/usr/bin/dnf)
 		dnf check-update
-		ins "dnf install" "$1"
+		[ "$1" = "-i" ] && echo "y" | dnf install $(cat $software_list)
 		yes "y" | dnf upgrade
 		printf "\n-- REMOVING UNUSED PACKAGES --\n"
 		echo "y" | dnf autoremove
@@ -92,19 +82,19 @@ case "$pkgMgr" in
 
 	/sbin/apk)
 		apk update
-		ins "apk add" "$1"
+		[ "$1" = "-i" ] && echo "y" | apk add $(cat $software_list)
 		apk upgrade
 		exit 0
 	;;
 
 	/usr/sbin/pkg)
-		ins "pkg install" "$1"
+		[ "$1" = "-i" ] && echo "y" | pkg install $(cat $software_list)
 		echo "y" | pkg upgrade && echo "y" | pkg autoremove
 		exit 0
 	;;
 
 	/usr/sbin/pkg_add)
-		ins "pkg_add" "$1"
+		[ "$1" = "-i" ] && echo "y" | pkg_add $(cat $software_list)
 		pkg_add -u
 		exit 0
 	;;
