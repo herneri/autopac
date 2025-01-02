@@ -28,15 +28,15 @@ printf "Usage: autopac [OPTION] \nOptions:\n -i  Install software \n -u  Upgrade
 mkdir $HOME/.config/autopac/ 2> /dev/null
 software_list="$HOME/.config/autopac/software.config"
 
+if [ "$2" = "-i" ] && [ ! -f $software_list ]; then
+	touch $software_list 2> /dev/null
+	printf "NOTICE: The software list at $software_list does not exist\n"
+	printf "Please write the names of the packages you want installed there and try again\n"
+	exit 1
+fi
+
 ins() {
 	if [ "$2" = "-i" ]; then
-		if [ ! -f $software_list ]; then
-			touch $software_list 2> /dev/null
-			printf "NOTICE: The software list at $software_list does not exist\n"
-			printf "Please write the names of the packages you want installed there and try again\n"
-			exit 1
-		fi
-
 		for pkg in $(cat $software_list); do
 			echo "y" | $1 $pkg
 		done
