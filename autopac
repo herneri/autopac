@@ -23,10 +23,10 @@ printf "Usage: autopac [OPTION] \nOptions:\n -i  Install software \n -u  Upgrade
 
 [ "$1" = "-f" ] && [ -f /usr/bin/flatpak ] && flatpak update -y && exit 0
 
-[ "$1" = "-s" ] && [ -f /usr/bin/snap ] && sudo snap refresh && exit 0
+[ ! "$2" ] && printf "ERROR: You must specify the user as the second argument \n" && exit 1
 
-mkdir $HOME/.config/autopac/ 2> /dev/null
-software_list="$HOME/.config/autopac/software.config"
+mkdir /home/$2/.config/autopac/ 2> /dev/null
+software_list="/home/$2/.config/autopac/software.config"
 
 if [ "$2" = "-i" ] && [ ! -f $software_list ]; then
 	touch $software_list 2> /dev/null
@@ -34,6 +34,13 @@ if [ "$2" = "-i" ] && [ ! -f $software_list ]; then
 	printf "Please write the names of the packages you want installed there and try again\n"
 	exit 1
 fi
+
+if [ $(whoami) != "root" ]; then
+	printf "ERROR: You must run this script as root \n"
+	exit 1
+fi
+
+[ "$1" = "-s" ] && [ -f /usr/bin/snap ] && snap refresh && exit 0
 
 ins() {
 	if [ "$2" = "-i" ]; then
@@ -56,30 +63,30 @@ done
 
 case "$pkgMgr" in
 	/usr/bin/pacman)
-		sudo pacman -Syy
-		ins "sudo pacman -S" "$1"
-		echo "y" | sudo pacman -Su
+		pacman -Syy
+		ins "pacman -S" "$1"
+		echo "y" | pacman -Su
 		printf "\n-- QUERYING DATABASE FOR ORPHANS --\n"
 		echo "ORPHANS:"
-		sudo pacman -Qdt
+		pacman -Qdt
 		exit 0
 	;;
 
 	/usr/bin/apt)
-		sudo apt update
-		ins "sudo apt install" "$1"
-		sudo apt upgrade -y
+		apt update
+		ins "apt install" "$1"
+		apt upgrade -y
 		printf "\n-- REMOVING UNUSED PACKAGES --\n"
-		sudo apt autoremove -y
+		apt autoremove -y
 		exit 0
 	;;
 
 	/usr/bin/dnf)
-		sudo dnf check-update
-		ins "sudo dnf install" "$1"
-		yes "y" | sudo dnf upgrade
+		dnf check-update
+		ins "dnf install" "$1"
+		yes "y" | dnf upgrade
 		printf "\n-- REMOVING UNUSED PACKAGES --\n"
-		echo "y" | sudo dnf autoremove
+		echo "y" | dnf autoremove
         exit 0
 	;;
 
