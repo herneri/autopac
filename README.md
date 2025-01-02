@@ -13,13 +13,13 @@ package managers on most popular operating systems.
 |	OpenBSD		   | pkg\_add             |
 |	Other		   | flatpak, snap        |
 
-## Configuration
+## Setup
 Packages are read from the list stored at `.config/autopac/software.config`
-in the specified user's home directory by default. Just write each package name
-you want to install and seperate them by whitespace.
+in the specified user's home directory by default. Just write the name of each
+package you want to install and seperate them with whitespace.
 
 After you are done, run `autopac -i <USER>` as root, where `<USER>` is the user
-who's software list you want to use. All the specified packages will be
+whose software list you want to use. All the listed packages will be
 automatically installed with the detected package manager.
 
-The system is updated whether `-i` or `-u` is chosen.
+The system is ***always*** updated, regardless of whether `-i` or `-u` is chosen.
