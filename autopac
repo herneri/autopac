@@ -17,16 +17,22 @@
 #   limitations under the License.
 
 [ ! "$1" ] || [ "$1" = "--help" ] || [ "$1" = "-h" ] &&
-printf "Usage: autopac [OPTION] \nOptions:\n -i  Install software \n -u  Upgrade software \n -f  Upgrade flatpaks \n -h  Show options\n" && exit 0
+printf "Usage: autopac [OPTION] \nOptions:\n -i  Install software \n -c [LIST] Use specific list \n -u  Upgrade software \n -f  Upgrade flatpaks \n -h  Show options\n" && exit 0
 
 [ "$1" = "-v" ] && printf "autopac 1.1 \n" && exit 0
 
 [ "$1" = "-f" ] && [ -f /usr/bin/flatpak ] && flatpak update -y && exit 0
 
-[ ! "$2" ] && printf "ERROR: You must specify the user as the second argument \n" && exit 1
+[ "$1" != "-c" ] && [ ! "$2" ] && printf "ERROR: You must specify the user as the second argument \n" && exit 1
 
 mkdir /home/$2/.config/autopac/ 2> /dev/null
-software_list="/home/$2/.config/autopac/software.config"
+
+if [ "$1" = "-c" ]; then
+	[ ! $2 ] || [ ! -f $2 ] && printf "ERROR: A valid list file must be specified \n" && exit 1
+	software_list="$2"
+else
+	software_list="/home/$2/.config/autopac/software.config"
+fi
 
 if [ "$1" = "-i" ] && [ ! -f $software_list ]; then
 	touch $software_list 2> /dev/null
@@ -54,7 +60,7 @@ done
 case "$pkgMgr" in
 	/usr/bin/pacman)
 		pacman -Syy
-		[ "$1" = "-i" ] && echo "y" | pacman -S $(cat $software_list)
+		[ "$1" = "-i" ] || [ "$1" = "-c" ] && echo "y" | pacman -S $(cat $software_list)
 		echo "y" | pacman -Su
 		printf "\n-- QUERYING DATABASE FOR ORPHANS --\n"
 		echo "ORPHANS:"
@@ -64,7 +70,7 @@ case "$pkgMgr" in
 
 	/usr/bin/apt)
 		apt update
-		[ "$1" = "-i" ] && echo "y" | apt install $(cat $software_list)
+		[ "$1" = "-i" ] || [ "$1" = "-c" ] && echo "y" | apt install $(cat $software_list)
 		apt upgrade -y
 		printf "\n-- REMOVING UNUSED PACKAGES --\n"
 		apt autoremove -y
@@ -73,7 +79,7 @@ case "$pkgMgr" in
 
 	/usr/bin/dnf)
 		dnf check-update
-		[ "$1" = "-i" ] && echo "y" | dnf install $(cat $software_list)
+		[ "$1" = "-i" ] || [ "$1" = "-c" ] && echo "y" | dnf install $(cat $software_list)
 		yes "y" | dnf upgrade
 		printf "\n-- REMOVING UNUSED PACKAGES --\n"
 		echo "y" | dnf autoremove
@@ -82,19 +88,19 @@ case "$pkgMgr" in
 
 	/sbin/apk)
 		apk update
-		[ "$1" = "-i" ] && echo "y" | apk add $(cat $software_list)
+		[ "$1" = "-i" ] || [ "$1" = "-c" ] && echo "y" | apk add $(cat $software_list)
 		apk upgrade
 		exit 0
 	;;
 
 	/usr/sbin/pkg)
-		[ "$1" = "-i" ] && echo "y" | pkg install $(cat $software_list)
+		[ "$1" = "-i" ] || [ "$1" = "-c" ] && echo "y" | pkg install $(cat $software_list)
 		echo "y" | pkg upgrade && echo "y" | pkg autoremove
 		exit 0
 	;;
 
 	/usr/sbin/pkg_add)
-		[ "$1" = "-i" ] && echo "y" | pkg_add $(cat $software_list)
+		[ "$1" = "-i" ] || [ "$1" = "-c" ] && echo "y" | pkg_add $(cat $software_list)
 		pkg_add -u
 		exit 0
 	;;

@@ -22,4 +22,6 @@ After you are done, run `autopac -i <USER>` as root, where `<USER>` is the user
 whose software list you want to use. All the listed packages will be
 automatically installed with the detected package manager.
 
-The system is ***always*** updated, regardless of whether `-i` or `-u` is chosen.
+To choose a specific list, run `autopac -c <PATH>` as root instead.
+
+The system is ***always*** updated, regardless of whether `-i`, `-c`, or `-u` is chosen.
